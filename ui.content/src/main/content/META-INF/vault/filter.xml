@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/conf/bisswanger" mode="merge"/>
+    <filter root="/content/bisswanger" mode="merge"/>
+    <filter root="/content/dam/bisswanger" mode="merge">
+        <exclude pattern="/content/dam/bisswanger(/.*)?"/>
+        <include pattern="/content/dam/bisswanger/jcr:content(/.*)?"/>
+    </filter>
+    <filter root="/content/dam/bisswanger/asset.jpg" mode="merge"/>
+    <filter root="/content/experience-fragments/bisswanger" mode="merge"/>
+</workspaceFilter>
