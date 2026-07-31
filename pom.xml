@@ -47,7 +47,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <aem.sdk.api>2026.7.27293.20260724T150618Z-260600</aem.sdk.api>
-    <aemanalyser.version>1.6.6</aemanalyser.version>
+    <aemanalyser.version>1.7.2</aemanalyser.version>
     <componentGroupName>bisswanger</componentGroupName>
   </properties>
   <build>
@@ -84,7 +84,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>[3.6.3,)</version>
+                  <version>[3.8.1,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <message>Maven must be executed with a Java 11 JRE or higher.</message>
@@ -195,7 +195,7 @@ Bundle-DocURL:
             <dependency>
               <groupId>org.apache.sling</groupId>
               <artifactId>scriptingbundle-maven-plugin</artifactId>
-              <version>0.5.0</version>
+              <version>0.5.2</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -247,7 +247,7 @@ Bundle-DocURL:
         <plugin>
           <groupId>org.apache.sling</groupId>
           <artifactId>sling-maven-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.0.4</version>
           <configuration>
             <slingUrl>http://${aem.host}:${aem.port}/system/console</slingUrl>
             <deploymentMethod>WebConsole</deploymentMethod>
@@ -528,7 +528,7 @@ Bundle-DocURL:
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.8.2</version>
+        <version>5.14.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -565,7 +565,7 @@ Bundle-DocURL:
       <dependency>
         <groupId>org.apache.sling</groupId>
         <artifactId>org.apache.sling.testing.caconfig-mock-plugin</artifactId>
-        <version>1.4.0</version>
+        <version>1.5.4</version>
         <exclusions>
           <exclusion>
             <groupId>commons-collections</groupId>
