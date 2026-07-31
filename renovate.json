@@ -25,7 +25,7 @@
       "description": "AUTOMERGE the boring stuff — patch + minor devDependencies merge themselves once the Cloud Manager pipeline is green.",
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Group the Babel toolchain.",
