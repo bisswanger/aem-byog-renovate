@@ -1,21 +1,63 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    ":dependencyDashboard",
+    "config:recommended",
     ":separateMajorReleases",
     ":combinePatchMinorReleases",
     ":ignoreUnstable",
     ":prImmediately",
     ":semanticPrefixFixDepsChoreOthers",
     ":updateNotScheduled",
-    ":automergeDisabled",
-    ":ignoreModulesAndTests",
-    "group:monorepos",
-    "group:recommended",
-    "helpers:disableTypesNodeMajor",
-    ":prHourlyLimitNone",
-    "docker:enableMajor"
+    ":prHourlyLimitNone"
   ],
-  "pinDigests": true,
-  "prConcurrentLimit": 3
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 10,
+  "rangeStrategy": "bump",
+  "minimumReleaseAge": "7 days",
+  "packageRules": [
+    {
+      "description": "Group all AEM Core Components into a single PR to cut noise.",
+      "matchPackageNames": ["com.adobe.cq:core.wcm.components.**"],
+      "groupName": "AEM Core Components"
+    },
+    {
+      "description": "AUTOMERGE the boring stuff — patch + minor devDependencies merge themselves once the Cloud Manager pipeline is green.",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Group the Babel toolchain.",
+      "matchPackageNames": ["@babel/**", "babel-**"],
+      "groupName": "Babel"
+    },
+    {
+      "description": "Group the webpack toolchain.",
+      "matchPackageNames": ["webpack", "webpack-**", "**-webpack-plugin", "**-loader"],
+      "groupName": "webpack"
+    },
+    {
+      "description": "Group the ESLint / TypeScript-ESLint toolchain.",
+      "matchPackageNames": ["eslint", "eslint-**", "@typescript-eslint/**"],
+      "groupName": "ESLint"
+    },
+    {
+      "description": "Major updates are never automerged — a human reviews them. Labelled so they stand out in the queue.",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major-update"]
+    },
+    {
+      "description": "Group Cypress",
+      "matchPackageNames": ["cypress", "cypress-**", "cypress/included"],
+      "groupName": "Cypress"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "schedule": ["at any time"],
+    "prPriority": 10,
+    "minimumReleaseAge": "0 days"
+  },
+  "osvVulnerabilityAlerts": true
 }
