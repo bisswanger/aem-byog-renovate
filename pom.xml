@@ -46,7 +46,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <aem.sdk.api>2026.8.27830.20260820T160150Z-260700</aem.sdk.api>
-    <aemanalyser.version>1.7.2</aemanalyser.version>
+    <aemanalyser.version>1.7.4</aemanalyser.version>
     <componentGroupName>bisswanger</componentGroupName>
   </properties>
   <build>
