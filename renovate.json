@@ -78,11 +78,6 @@
       "description": "Keep sling models in a version supported by AEM Cloud Service",
       "matchPackageNames": ["org.apache.sling:org.apache.sling.models.impl"],
       "allowedVersions": "<2.0.0"
-    },
-    {
-      "description": "Typescript code + used tools in this project is not compatible with latest versions",
-      "matchPackageNames": ["typescript"],
-      "allowedVersions": "<6.0.0"
     }
   ],
   "osvVulnerabilityAlerts": true
