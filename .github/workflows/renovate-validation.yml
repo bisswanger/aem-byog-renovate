@@ -1,20 +1,21 @@
 name: Renovate branch validation
 
-# Validate every branch Renovate creates by running a full Maven build.
+# Validate every PR Renovate creates by running a full Maven build.
 on:
-  push:
-    branches:
-      - "renovate/**"
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   workflow_dispatch:
 
 # Cancel superseded runs when Renovate force-pushes to the same branch.
 concurrency:
-  group: renovate-validation-${{ github.ref }}
+  group: renovate-validation-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   verify:
     name: mvn clean verify
+    # Only validate Renovate branches (head ref), or manual dispatches.
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'renovate/')
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch
@@ -27,5 +28,127 @@ jobs:
           java-version: "21"
           cache: maven
 
+      # Every job runs the full Maven build first.
       - name: mvn clean verify
         run: mvn --batch-mode --no-transfer-progress clean verify
+
+  cloud-manager:
+    name: Cloud Manager pipeline run
+    needs: verify
+    # Skip for validation-only PRs; run the pipeline for everything else.
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'mvn-validation-only') }}
+    runs-on: ubuntu-latest
+
+    # Adobe Cloud Manager allows only a single pipeline session at a time.
+    # This fixed group serializes the job across ALL PRs (no parallel runs),
+    # queueing rather than cancelling an in-flight pipeline execution.
+    concurrency:
+      group: cloud-manager-pipeline
+      cancel-in-progress: false
+
+    env:
+      CM_PROGRAM_ID: ${{ vars.CM_PROGRAM_ID }}
+      CM_PIPELINE_ID: ${{ vars.CM_PIPELINE_ID }}
+      # The Renovate branch to point the pipeline at.
+      CM_BRANCH: ${{ github.head_ref || github.ref_name }}
+      # Environment targeting — both optional; unset means production.
+      # CM_BASE_URL: full Cloud Manager API base URL (omit for prod default).
+      # CM_IMS_ENV: IMS environment, "prod" or "stage" (omit for prod).
+      CM_BASE_URL: ${{ vars.CM_BASE_URL }}
+      CM_IMS_ENV: ${{ vars.CM_IMS_ENV }}
+
+    steps:
+      - name: Set up Adobe I/O CLI
+        uses: adobe/aio-cli-setup-action@1.3.0
+        with:
+          os: ubuntu-latest
+          version: 10.x
+
+      - name: Install Cloud Manager plugin
+        run: aio plugins:install -g @adobe/aio-cli-plugin-cloudmanager
+
+      # Configure OAuth Server-to-Server credentials for the plugin's default
+      # IMS context (aio-cli-plugin-cloudmanager). Built with jq so secrets are
+      # never interpolated into the workflow and quoting stays safe.
+      - name: Configure Adobe I/O authentication
+        env:
+          CM_CLIENT_ID: ${{ secrets.CM_CLIENT_ID }}
+          CM_CLIENT_SECRET: ${{ secrets.CM_CLIENT_SECRET }}
+          CM_TECHNICAL_ACCOUNT_ID: ${{ secrets.CM_TECHNICAL_ACCOUNT_ID }}
+          CM_TECHNICAL_ACCOUNT_EMAIL: ${{ secrets.CM_TECHNICAL_ACCOUNT_EMAIL }}
+          CM_IMS_ORG_ID: ${{ secrets.CM_IMS_ORG_ID }}
+          # Comma-separated list of scopes from the Developer Console credential.
+          CM_SCOPES: ${{ secrets.CM_SCOPES }}
+        run: |
+          # Default the IMS environment to prod when not configured.
+          ims_env="${CM_IMS_ENV:-prod}"
+          echo "Using IMS environment: $ims_env"
+          jq -n \
+            --arg client_id "$CM_CLIENT_ID" \
+            --arg client_secret "$CM_CLIENT_SECRET" \
+            --arg tech_id "$CM_TECHNICAL_ACCOUNT_ID" \
+            --arg tech_email "$CM_TECHNICAL_ACCOUNT_EMAIL" \
+            --arg ims_org "$CM_IMS_ORG_ID" \
+            --arg scopes "$CM_SCOPES" \
+            --arg env "$ims_env" \
+            '{
+              client_id: $client_id,
+              client_secrets: [$client_secret],
+              technical_account_id: $tech_id,
+              technical_account_email: $tech_email,
+              ims_org_id: $ims_org,
+              scopes: ($scopes | split(",") | map(gsub("^\\s+|\\s+$";""))),
+              env: $env,
+              oauth_enabled: true
+            }' > "$RUNNER_TEMP/aio-cm-config.json"
+          aio config:set ims.contexts.aio-cli-plugin-cloudmanager \
+            "$RUNNER_TEMP/aio-cm-config.json" --file --json
+          rm -f "$RUNNER_TEMP/aio-cm-config.json"
+
+          # Point at a non-prod Cloud Manager API endpoint only when configured;
+          # otherwise the plugin defaults to production (cloudmanager.adobe.io).
+          if [ -n "$CM_BASE_URL" ]; then
+            echo "Using Cloud Manager base URL: $CM_BASE_URL"
+            aio config:set cloudmanager.base_url "$CM_BASE_URL"
+          else
+            echo "Using default (production) Cloud Manager API endpoint."
+          fi
+
+      # 1) Point the pipeline at the Renovate branch.
+      - name: Update pipeline branch
+        run: |
+          echo "Setting pipeline $CM_PIPELINE_ID to branch $CM_BRANCH"
+          aio cloudmanager:pipeline:update "$CM_PIPELINE_ID" \
+            --programId "$CM_PROGRAM_ID" \
+            --branch "$CM_BRANCH"
+
+      # 2) Start a pipeline execution.
+      - name: Start pipeline execution
+        run: |
+          aio cloudmanager:pipeline:create-execution "$CM_PIPELINE_ID" \
+            --programId "$CM_PROGRAM_ID"
+
+      # 3) Poll until the current execution reaches a terminal state.
+      - name: Wait for pipeline completion
+        run: |
+          set -euo pipefail
+          echo "Waiting for pipeline $CM_PIPELINE_ID execution to complete..."
+          for _ in $(seq 1 240); do
+            status=$(aio cloudmanager:pipeline:list-executions "$CM_PIPELINE_ID" \
+              --programId "$CM_PROGRAM_ID" --limit 1 --json \
+              | jq -r '.[0].status // .[0].statusName // "UNKNOWN"')
+            echo "Execution status: $status"
+            case "$status" in
+              FINISHED)
+                echo "Pipeline execution finished successfully."
+                exit 0
+                ;;
+              ERROR|FAILED|CANCELLED|CANCELLING)
+                echo "Pipeline execution ended in status: $status"
+                exit 1
+                ;;
+            esac
+            sleep 30
+          done
+          echo "Timed out waiting for pipeline execution to complete."
+          exit 1
