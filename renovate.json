@@ -14,7 +14,7 @@
   "labels": ["dependencies"],
   "prConcurrentLimit": 10,
   "rangeStrategy": "bump",
-  "minimumReleaseAge": "7 days",
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "description": "Group all AEM Core Components into a single PR to cut noise.",
