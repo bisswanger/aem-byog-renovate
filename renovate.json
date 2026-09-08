@@ -58,7 +58,9 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "npm dev dependencies - fixes",
       "automerge": true,
-      "excludePackagePatterns": ["^cypress"]
+      "matchPackageNames": [
+        "!/^cypress/"
+      ]
     },
     {
       "description": "Group Maven test-scoped dependencies (minor + patch) into one auto-merged PR.",
