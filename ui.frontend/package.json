@@ -24,7 +24,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
-    "acorn": "^6.4.2",
+    "acorn": "^8.18.0",
     "aem-clientlib-generator": "^1.8.0",
     "aemsync": "^4.0.3",
     "autoprefixer": "^9.8.8",
