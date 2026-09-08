@@ -554,7 +554,7 @@ Bundle-DocURL:
       <dependency>
         <groupId>io.wcm</groupId>
         <artifactId>io.wcm.testing.aem-mock.junit5</artifactId>
-        <version>5.5.4</version>
+        <version>5.7.4</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -593,9 +593,9 @@ Bundle-DocURL:
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>uk.org.lidalia</groupId>
+        <groupId>com.github.valfirst</groupId>
         <artifactId>slf4j-test</artifactId>
-        <version>1.0.1</version>
+        <version>3.0.3</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

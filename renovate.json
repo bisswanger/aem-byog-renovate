@@ -86,7 +86,7 @@
     },
     {
       "description": "Some build tools don't support TypeScript 6+7 yet",
-      "matchPackageNames": ["typscript"],
+      "matchPackageNames": ["typescript"],
       "allowedVersions": "<6.0.0"
     }
   ],

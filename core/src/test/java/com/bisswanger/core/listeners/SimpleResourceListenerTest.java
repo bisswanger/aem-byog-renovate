@@ -25,10 +25,10 @@ import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.junit.jupiter.api.Test;
 
-import uk.org.lidalia.slf4jext.Level;
-import uk.org.lidalia.slf4jtest.LoggingEvent;
-import uk.org.lidalia.slf4jtest.TestLogger;
-import uk.org.lidalia.slf4jtest.TestLoggerFactory;
+import org.slf4j.event.Level;
+import com.github.valfirst.slf4jtest.LoggingEvent;
+import com.github.valfirst.slf4jtest.TestLogger;
+import com.github.valfirst.slf4jtest.TestLoggerFactory;
 
 class SimpleResourceListenerTest {
 
@@ -38,9 +38,9 @@ class SimpleResourceListenerTest {
 
     @Test
     void handleEvent() {
-        
+
         ResourceChange change = new ResourceChange(ChangeType.ADDED,"/content/test", false);
-        
+
         fixture.onChange(Arrays.asList(change));
 
         List<LoggingEvent> events = logger.getLoggingEvents();
