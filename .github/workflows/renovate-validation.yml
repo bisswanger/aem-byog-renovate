@@ -67,7 +67,7 @@ jobs:
           version: 11.1.2
 
       - name: Install Cloud Manager plugin
-        run: aio plugins:install -g @adobe/aio-cli-plugin-cloudmanager
+        run: aio plugins:install @adobe/aio-cli-plugin-cloudmanager
 
       # Configure OAuth Server-to-Server credentials for the plugin's default
       # IMS context (aio-cli-plugin-cloudmanager). Built with jq so secrets are
