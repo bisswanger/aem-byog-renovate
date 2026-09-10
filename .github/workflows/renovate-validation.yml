@@ -62,7 +62,9 @@ jobs:
         uses: adobe/aio-cli-setup-action@1.3.0
         with:
           os: ubuntu-latest
-          version: 10.x
+          # 10.3.4 has bug ACNA-4397 where `aio plugins:install` throws
+          # "opts.getPluginsList is not a function"; 11.x fixes it.
+          version: 11.1.2
 
       - name: Install Cloud Manager plugin
         run: aio plugins:install -g @adobe/aio-cli-plugin-cloudmanager
