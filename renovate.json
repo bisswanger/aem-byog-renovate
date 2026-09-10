@@ -49,6 +49,7 @@
         "org.apache.maven.plugins:maven-failsafe-plugin"
       ],
       "groupName": "Maven test plugins",
+      "addLabels": ["mvn-validation-only"],
       "automerge": true
     },
     {
@@ -68,6 +69,7 @@
       "matchDepTypes": ["test"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "maven test dependencies - fixes",
+      "addLabels": ["mvn-validation-only"],
       "automerge": true
     },
     {

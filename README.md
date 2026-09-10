@@ -117,6 +117,61 @@ A ClientLib will consist of the following files and directories:
 - `js.txt` (tells AEM the order and names of files in `js/` so they can be merged
 - `resources/`: Source maps, non-entrypoint code chunks (resulting from code splitting), static assets (e.g. icons), etc.
 
+## Renovate dependency validation
+
+Dependency updates are proposed by [Renovate](https://docs.renovatebot.com/) (see `renovate.json`) and
+validated automatically by the `.github/workflows/renovate-validation.yml` GitHub Actions workflow.
+
+The workflow runs on `pull_request` events for branches named `renovate/**` and has two jobs:
+
+1. **`verify`** — always runs `mvn clean verify` for the updated dependencies.
+2. **`cloud-manager`** — depends on `verify` and, for updates that need it, triggers an Adobe Cloud Manager
+   pipeline run (update the pipeline to the Renovate branch, start an execution, and wait for completion).
+
+### The `mvn-validation-only` label
+
+Renovate adds the `mvn-validation-only` label to low-risk dependency groups that only need a Maven build to be
+validated (configured in `renovate.json` for the **Maven test plugins** and **maven test dependencies - fixes**
+groups). PRs carrying this label run **only** the `verify` job; the `cloud-manager` job is skipped. All other
+PRs run both jobs.
+
+### Single Cloud Manager session
+
+Adobe Cloud Manager allows only one pipeline execution at a time. The `cloud-manager` job uses a fixed GitHub
+Actions concurrency group (`cloud-manager-pipeline`, `cancel-in-progress: false`), so pipeline runs across **all**
+PRs are serialized — a new run queues behind any in-flight execution rather than running in parallel.
+
+### Required configuration
+
+The `cloud-manager` job authenticates with an Adobe I/O
+[OAuth Server-to-Server](https://developer.adobe.com/developer-console/docs/guides/authentication/ServerToServerAuthentication/)
+credential and drives the [`@adobe/aio-cli-plugin-cloudmanager`](https://github.com/adobe/aio-cli-plugin-cloudmanager)
+plugin. Configure the following in the repository settings (**Settings → Secrets and variables → Actions**).
+
+**Repository variables** (`vars.*`):
+
+| Variable         | Required | Description                                                                                 |
+|------------------|----------|---------------------------------------------------------------------------------------------|
+| `CM_PROGRAM_ID`  | yes      | Cloud Manager program ID that owns the pipeline.                                             |
+| `CM_PIPELINE_ID` | yes      | Cloud Manager pipeline ID to update and execute.                                            |
+| `CM_IMS_ENV`     | no       | IMS environment: `prod` or `stage`. Defaults to `prod` when unset.                          |
+| `CM_BASE_URL`    | no       | Cloud Manager API base URL. Unset targets production (`https://cloudmanager.adobe.io`).     |
+
+> To target a **stage** Cloud Manager instance, set both `CM_IMS_ENV=stage` and `CM_BASE_URL` to the stage API URL.
+> With neither set, the job targets **production**.
+
+**Repository secrets** (`secrets.*`) — all taken from the OAuth Server-to-Server credential in the
+Adobe Developer Console:
+
+| Secret                       | Description                                                        |
+|------------------------------|-------------------------------------------------------------------|
+| `CM_CLIENT_ID`               | Credential client ID.                                             |
+| `CM_CLIENT_SECRET`           | Credential client secret.                                        |
+| `CM_TECHNICAL_ACCOUNT_ID`    | Technical account ID.                                            |
+| `CM_TECHNICAL_ACCOUNT_EMAIL` | Technical account email.                                         |
+| `CM_IMS_ORG_ID`              | IMS organization ID.                                            |
+| `CM_SCOPES`                  | Comma-separated list of scopes from the credential.             |
+
 ## Maven settings
 
 The project comes with the auto-public repository configured. To setup the repository in your Maven settings, refer to:
