@@ -43,6 +43,13 @@
       "labels": ["dependencies", "major-update"]
     },
     {
+      "description": "Group generic Maven plugins",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["org.apache.maven.plugins:**", "org.codehaus.mojo:**"],
+      "addLabels": ["mvn-validation-only"],
+      "groupName": "Maven plugins"
+    },
+    {
       "description": "Group all AEM Core Components into a single PR to cut noise.",
       "matchPackageNames": ["com.adobe.cq:core.wcm.components.**"],
       "groupName": "AEM Core Components"
