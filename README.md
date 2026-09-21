@@ -2,6 +2,9 @@
 
 This is a project template for AEM-based applications. It is intended as a best-practice set of examples as well as a potential starting point to develop your own functionality.
 
+> This project was created as a reference implementation for the adaptTo() 2026
+> session [Securing AEM Customer Code: Automated Fixes for Vulnerabilities in Dependencies](https://adapt.to/2026/schedule/securing-aem-customer-code-automated-fixes-for-vulnerabilities-in-dependencies).
+
 ## Modules
 
 The main parts of the template are:
