@@ -122,6 +122,9 @@ A ClientLib will consist of the following files and directories:
 
 ## Renovate dependency validation
 
+See [Renovate configuration](RENOVATE.md) for a detailed description of the update policies,
+dependency groups, labels, version constraints, automerge behavior, and validation flow.
+
 Dependency updates are proposed by [Renovate](https://docs.renovatebot.com/) (see `renovate.json`) and
 validated automatically by the `.github/workflows/renovate-validation.yml` GitHub Actions workflow.
 
