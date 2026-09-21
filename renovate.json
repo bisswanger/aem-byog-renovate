@@ -22,6 +22,7 @@
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "npm dev dependencies - fixes",
+      "addLabels": ["auto-merge"],
       "automerge": true,
       "matchPackageNames": [
         "!/^cypress/"
@@ -33,7 +34,7 @@
       "matchDepTypes": ["test"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "maven test dependencies - fixes",
-      "addLabels": ["mvn-validation-only"],
+      "addLabels": ["mvn-validation-only", "auto-merge"],
       "automerge": true,
       "matchPackageNames": [
         "!/^com.adobe.cq:core.wcm.components./"
@@ -71,6 +72,7 @@
       "description": "Group the ESLint / TypeScript-ESLint toolchain.",
       "matchPackageNames": ["eslint", "eslint-**", "@typescript-eslint/**"],
       "groupName": "ESLint",
+      "addLabels": ["auto-merge"],
       "automerge": true
     },
     {
@@ -85,7 +87,7 @@
         "org.apache.maven.plugins:maven-failsafe-plugin"
       ],
       "groupName": "Maven test plugins",
-      "addLabels": ["mvn-validation-only"],
+      "addLabels": ["mvn-validation-only", "auto-merge"],
       "automerge": true
     },
     {
