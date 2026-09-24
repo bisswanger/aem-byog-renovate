@@ -71,7 +71,7 @@
       "description": "Group the ESLint / TypeScript-ESLint toolchain.",
       "matchPackageNames": ["eslint", "eslint-**", "@typescript-eslint/**"],
       "groupName": "ESLint",
-      "addLabels": ["auto-merge"],
+      "addLabels": ["mvn-validation-only", "auto-merge"],
       "automerge": true
     },
     {
