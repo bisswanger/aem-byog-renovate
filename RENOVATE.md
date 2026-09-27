@@ -34,18 +34,20 @@ Additional repository-wide settings are:
 
 The package rules reduce PR noise while applying validation and automerge policies appropriate to each dependency class.
 
-| Dependency class | Behavior |
-|---|---|
-| npm `devDependencies`, minor/patch | Grouped as **npm dev dependencies - fixes**, except Cypress packages; labeled `auto-merge` and configured for automerge. |
-| Maven test dependencies, minor/patch | Grouped as **maven test dependencies - fixes**, except AEM Core Components; labeled `mvn-validation-only` and `auto-merge`, and configured for automerge. |
-| Major updates | Labeled `major-update` so they stand out and configured not to automerge by the major-update rule. |
-| Generic Maven plugins | `org.apache.maven.plugins:**` and `org.codehaus.mojo:**` are grouped as **Maven plugins** and labeled `mvn-validation-only`. |
-| AEM Core Components | All `com.adobe.cq:core.wcm.components.**` artifacts are grouped into one PR. |
-| Babel | `@babel/**` and `babel-**` packages are grouped as **Babel**. |
-| webpack | webpack, webpack plugins, and loaders are grouped as **webpack**. |
-| ESLint | ESLint and TypeScript-ESLint packages are grouped as **ESLint**, labeled `auto-merge`, and configured for automerge. |
-| Cypress | Cypress packages are grouped as **Cypress** and excluded from the generic npm development-dependency group. |
-| Maven test plugins | Surefire and Failsafe are grouped because they share a version; labeled `mvn-validation-only` and `auto-merge`, and configured for automerge. |
+| Dependency class | Grouping and policy | Auto-merge | `mvn-validation-only` |
+|---|---|:---:|:---:|
+| npm `devDependencies`, minor/patch | Grouped as **npm dev dependencies - fixes**, except Cypress packages. | ✅ | — |
+| Maven test dependencies, minor/patch | Grouped as **maven test dependencies - fixes**, except AEM Core Components. | ✅ | ✅ |
+| Major updates | Kept separate and labeled `major-update` so they stand out. | ❌ | — |
+| Generic Maven plugins | `org.apache.maven.plugins:**` and `org.codehaus.mojo:**` are grouped as **Maven plugins**. | — | ✅ |
+| AEM Core Components | All `com.adobe.cq:core.wcm.components.**` artifacts are grouped into one PR. | — | — |
+| Babel | `@babel/**` and `babel-**` packages are grouped as **Babel**. | — | — |
+| webpack | webpack, webpack plugins, and loaders are grouped as **webpack**. | — | — |
+| ESLint | ESLint and TypeScript-ESLint packages are grouped as **ESLint**. | ✅ | ✅ |
+| Cypress | Cypress packages are grouped as **Cypress** and excluded from the generic npm development-dependency group. | — | — |
+| Maven test plugins | Surefire and Failsafe are grouped because they share a version. | ✅ | ✅ |
+
+**Legend:** ✅ enabled/applied · ❌ explicitly disabled · — not configured by this rule
 
 ### Version compatibility constraints
 

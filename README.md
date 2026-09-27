@@ -137,9 +137,9 @@ The workflow runs on `pull_request` events for branches named `renovate/**` and 
 ### The `mvn-validation-only` label
 
 Renovate adds the `mvn-validation-only` label to low-risk dependency groups that only need a Maven build to be
-validated (configured in `renovate.json` for the **Maven test plugins** and **maven test dependencies - fixes**
-groups). PRs carrying this label run **only** the `verify` job; the `cloud-manager` job is skipped. All other
-PRs run both jobs.
+validated (configured in `renovate.json` for the **Maven test plugins**, **maven test dependencies - fixes**,
+and **ESLint** groups). PRs carrying this label run **only** the `verify` job; the `cloud-manager` job is
+skipped. All other PRs run both jobs.
 
 ### Single Cloud Manager session
 
