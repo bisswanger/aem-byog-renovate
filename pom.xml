@@ -224,7 +224,7 @@ Bundle-DocURL:
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <configuration>
             <useSystemClassLoader>false</useSystemClassLoader>
             <excludeJUnit5Engines>
@@ -236,7 +236,7 @@ Bundle-DocURL:
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
         <!-- Maven Deploy Plugin -->
         <plugin>
