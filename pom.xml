@@ -42,7 +42,7 @@
     <vault.password>admin</vault.password>
     <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
     <core.wcm.components.version>2.32.6</core.wcm.components.version>
-    <bnd.version>7.4.0</bnd.version>
+    <bnd.version>7.5.0</bnd.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <aem.sdk.api>2026.10.28871.20261009T211133Z-260900</aem.sdk.api>
