@@ -25,7 +25,7 @@
     "acorn": "^8.19.0",
     "aem-clientlib-generator": "^2.0.4",
     "aemsync": "^5.2.6",
-    "autoprefixer": "^10.6.2",
+    "autoprefixer": "^10.7.0",
     "browserslist": "^4.29.6",
     "chokidar-cli": "^3.0.0",
     "clean-webpack-plugin": "^4.0.0",
