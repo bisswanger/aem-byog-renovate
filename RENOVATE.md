@@ -28,6 +28,7 @@ Additional repository-wide settings are:
 - At most **10 Renovate PRs** may be open concurrently.
 - `rangeStrategy: bump` updates the declared version range rather than only refreshing lockfiles.
 - Releases must be at least **three days old** before Renovate proposes them.
+- A regex custom manager discovers npm dependencies explicitly annotated in CI YAML files, including the Adobe I/O CLI version used by the validation workflow.
 - OSV vulnerability alerts are enabled with `osvVulnerabilityAlerts: true`.
 
 ## Dependency grouping and policy
@@ -39,6 +40,7 @@ The package rules reduce PR noise while applying validation and automerge polici
 | npm `devDependencies`, minor/patch | Grouped as **npm dev dependencies - fixes**, except Cypress packages. | ✅ | — |
 | Maven test dependencies, minor/patch | Grouped as **maven test dependencies - fixes**, except AEM Core Components. | ✅ | ✅ |
 | Major updates | Kept separate and labeled `major-update` so they stand out. | ❌ | — |
+| Adobe I/O CLI in CI YAML | Discovered from its Renovate annotation and updated from the npm `@adobe/aio-cli` package. | ✅ | — |
 | Generic Maven plugins | `org.apache.maven.plugins:**` and `org.codehaus.mojo:**` are grouped as **Maven plugins**. | — | ✅ |
 | AEM Core Components | All `com.adobe.cq:core.wcm.components.**` artifacts are grouped into one PR. | — | — |
 | Babel | `@babel/**` and `babel-**` packages are grouped as **Babel**. | — | — |
@@ -59,7 +61,7 @@ Some versions are deliberately held below known compatibility boundaries:
 
 ### Rule-order note
 
-Renovate combines every matching package rule, and later scalar settings can override earlier ones. In the current file, the ESLint and Maven test-plugin rules occur after the major-update rule and set `automerge: true`. Consequently, a matching major update may have automerge re-enabled by those later rules. If the requirement that major updates must never automerge is strict, move the major-update rule to the end of `packageRules` or restrict the automerge rules to `minor` and `patch` updates.
+Renovate combines every matching package rule, and later scalar settings can override earlier ones. In the current file, the Adobe I/O CLI, ESLint, and Maven test-plugin rules occur after the major-update rule and set `automerge: true`. Consequently, matching major updates in those categories may have automerge re-enabled by the later, package-specific rule. If the requirement that major updates must never automerge is strict, move the major-update rule to the end of `packageRules` or restrict the automerge rules to `minor` and `patch` updates.
 
 ## Labels and validation levels
 
@@ -92,12 +94,12 @@ Superseded workflow runs for the same PR are cancelled when Renovate updates the
 
 After Maven succeeds, the `cloud-manager` job runs unless the PR has the `mvn-validation-only` label. It:
 
-1. Installs Adobe I/O CLI 11.1.2 and `@adobe/aio-cli-plugin-cloudmanager`.
+1. Installs Adobe I/O CLI 11.2.0 and `@adobe/aio-cli-plugin-cloudmanager`.
 2. Configures OAuth Server-to-Server authentication.
 3. Changes the configured Cloud Manager pipeline to use the Renovate branch.
 4. Starts a pipeline execution.
-5. Polls every 30 seconds for up to 240 attempts (approximately two hours).
-6. Passes on `FINISHED` and fails on an error, failure, cancellation, or timeout.
+5. Polls every 30 seconds for up to 240 attempts (approximately two hours), logging each status with a UTC timestamp.
+6. Passes on `FINISHED` and fails on an error, failure, cancellation, or timeout; terminal messages also include a UTC timestamp.
 
 Cloud Manager permits only one pipeline session at a time. A fixed GitHub Actions concurrency group named `cloud-manager-pipeline` serializes pipeline jobs across all PRs without cancelling an execution already in progress.
 
