@@ -14,6 +14,17 @@
   "prConcurrentLimit": 10,
   "rangeStrategy": "bump",
   "minimumReleaseAge": "3 days",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Discover explicitly annotated npm dependencies in CI YAML files.",
+      "managerFilePatterns": ["/\\.ya?ml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+version:\\s*[\\\"']?(?<currentValue>\\d+\\.\\d+\\.\\d+)[\\\"']?"
+      ],
+      "versioningTemplate": "npm"
+    }
+  ],
   "packageRules": [
     {
       "description": "Group npm devDependencies (minor + patch) into one auto-merged PR.",
@@ -44,6 +55,13 @@
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "labels": ["dependencies", "major-update"]
+    },
+    {
+      "description": "Automatically merge Adobe I/O CLI updates discovered in CI configuration.",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["@adobe/aio-cli"],
+      "addLabels": ["auto-merge"],
+      "automerge": true
     },
     {
       "description": "Group generic Maven plugins",

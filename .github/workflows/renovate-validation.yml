@@ -64,7 +64,8 @@ jobs:
           os: ubuntu-latest
           # 10.3.4 has bug ACNA-4397 where `aio plugins:install` throws
           # "opts.getPluginsList is not a function"; 11.x fixes it.
-          version: 11.1.2
+          # renovate: datasource=npm depName=@adobe/aio-cli
+          version: 11.2.0
 
       - name: Install Cloud Manager plugin
         run: aio plugins:install @adobe/aio-cli-plugin-cloudmanager
@@ -132,25 +133,37 @@ jobs:
 
       # 3) Poll until the current execution reaches a terminal state.
       - name: Wait for pipeline completion
+        # Keep a hung CLI/API call from extending the job beyond the polling window.
+        timeout-minutes: 125
+        env:
+          TZ: UTC
+          # aio-cli passes the command result to oclif's flush timeout, which
+          # triggers this harmless Node warning for commands returning objects.
+          NODE_OPTIONS: --disable-warning=TimeoutNaNWarning
         run: |
           set -euo pipefail
-          echo "Waiting for pipeline $CM_PIPELINE_ID execution to complete..."
+
+          log() {
+            printf '%s: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
+          }
+
+          log "Waiting for pipeline $CM_PIPELINE_ID execution to complete..."
           for _ in $(seq 1 240); do
             status=$(aio cloudmanager:pipeline:list-executions "$CM_PIPELINE_ID" \
               --programId "$CM_PROGRAM_ID" --limit 1 --json \
               | jq -r '.[0].status // .[0].statusName // "UNKNOWN"')
-            echo "Execution status: $status"
+            log "Execution status: $status"
             case "$status" in
               FINISHED)
-                echo "Pipeline execution finished successfully."
+                log "Pipeline execution finished successfully."
                 exit 0
                 ;;
               ERROR|FAILED|CANCELLED|CANCELLING)
-                echo "Pipeline execution ended in status: $status"
+                log "Pipeline execution ended in status: $status"
                 exit 1
                 ;;
             esac
             sleep 30
           done
-          echo "Timed out waiting for pipeline execution to complete."
+          log "Timed out waiting for pipeline execution to complete."
           exit 1
